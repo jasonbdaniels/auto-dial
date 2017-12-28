@@ -10,6 +10,9 @@
       <li><b>CSV:</b> <input type="file" name="csv-file" id="csvInput" onchange="loadCSV()"></li>
     </ul>
 
+    <br>
+
+    <button type="button" onclick="loadCSV()" id="refresh" hidden >Reload CSV</button>
     <p id="output">
     </p>
 
@@ -26,6 +29,7 @@
 
         var csvReader = new FileReader()
 
+        document.getElementById('refresh').hidden = false;
         csvReader.onload = printCSV(csvReader);
         csvReader.readAsText(csvInput.files[0]);
       }
