@@ -18,7 +18,7 @@
 
     <script type="text/javascript">
       function loadCSV() {
-        let pin = document.getElementById('pin').value;
+        var pin = document.getElementById('pin').value;
         var csvInput = document.getElementById("csvInput");
 
         if (pin.length == 0) {
@@ -56,6 +56,7 @@
 
         if (parts.length >= 5 && parts[4].startsWith("James")) {
           var assignment = entry.replace(/,/g, " ")
+          var pin = document.getElementById('pin').value;
           var trackingNumber = parts[3];
           var checkInNumber = "15165007776,," + pin + "#" + trackingNumber + "#,,,,,#";
           var checkOutNumber = "15165007776,," + pin + "#" + trackingNumber + "#,,,,,#,1#,2#"
