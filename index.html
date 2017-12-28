@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <title>Auto Check In/Out</title>
+    <link rel="stylesheet" href="GitHub2.css">
+  </head>
+  <body>
+    <ul>
+      <li><b>PIN:</b> <input type="text" id="pin"></li>
+      <li><b>CSV:</b> <input type="file" name="csv-file" id="csvInput" onchange="loadCSV()"></li>
+    </ul>
+
+    <p id="output">
+    </p>
+
+    <script type="text/javascript">
+      function loadCSV() {
+        let pin = document.getElementById('pin').value;
+        var csvInput = document.getElementById("csvInput");
+
+        if (pin.length == 0) {
+          alert("Enter pin.");
+          csvInput.value = "";
+          return
+        }
+
+        var csvReader = new FileReader()
+
+        csvReader.onload = printCSV(csvReader);
+        csvReader.readAsText(csvInput.files[0]);
+      }
+
+      function printCSV(csvReader) {
+        return function() {
+          var entries = csvReader.result.split("\n");
+          var output = document.getElementById("output");
+          var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
+
+          for (var entryIndex in entries) {
+            var entry = entries[entryIndex];
+
+            tableOutput += makeEntryItem(entry);
+          }
+
+          tableOutput += "</table>"
+          output.innerHTML = tableOutput
+        }
+      }
+
+      function makeEntryItem(entry) {
+        let parts = entry.split(",");
+
+        if (parts.length >= 5 && parts[4].startsWith("James")) {
+          var assignment = entry.replace(/,/g, " ")
+          var trackingNumber = parts[3];
+          var checkInNumber = "15165007776,," + pin + "#" + trackingNumber + "#,,,,,#";
+          var checkOutNumber = "15165007776,," + pin + "#" + trackingNumber + "#,,,,,#,1#,2#"
+          var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
+          var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
+          var listItem = "<tr><td>" + assignment + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
+
+          return listItem
+        }
+
+        return ""
+      }
+    </script>
+  </body>
+</html>
