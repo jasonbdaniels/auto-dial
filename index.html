@@ -17,57 +17,61 @@
     </p>
 
     <script type="text/javascript">
-      function loadCSV() {
-        var pin = document.getElementById('pin').value;
-        var csvInput = document.getElementById("csvInput");
-
-        if (pin.length == 0) {
-          alert("Enter pin.");
-          csvInput.value = "";
-          return
-        }
-
-        var csvReader = new FileReader()
-
-        document.getElementById('refresh').hidden = false;
-        csvReader.onload = printCSV(csvReader);
-        csvReader.readAsText(csvInput.files[0]);
-      }
-
-      function printCSV(csvReader) {
-        return function() {
-          var entries = csvReader.result.split("\n");
-          var output = document.getElementById("output");
-          var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
-
-          for (var entryIndex in entries) {
-            var entry = entries[entryIndex];
-
-            tableOutput += makeEntryItem(entry);
-          }
-
-          tableOutput += "</table>"
-          output.innerHTML = tableOutput
-        }
-      }
-
       function makeEntryItem(entry) {
-        let parts = entry.split(",");
+        "use strict";
+        var parts = entry.split(",");
 
         if (parts.length >= 5 && parts[4].startsWith("James")) {
-          var assignment = entry.replace(/,/g, " ")
-          var pin = document.getElementById('pin').value;
+          var assignment = entry.replace(/,/g, " ");
+          var pin = document.getElementById("pin").value;
           var trackingNumber = parts[3];
           var checkInNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#";
-          var checkOutNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#,1#,2#"
+          var checkOutNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#,1#,2#";
           var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
           var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
           var listItem = "<tr><td>" + assignment + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
 
-          return listItem
+          return listItem;
         }
 
-        return ""
+        return "";
+      }
+
+      function printCSV(csvReader) {
+        "use strict";
+        return function() {
+          var entries = csvReader.result.split("\n");
+          var output = document.getElementById("output");
+          var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
+          var entry;
+          var entryIndex;
+
+          for (entryIndex in entries) {
+            entry = entries[entryIndex];
+            tableOutput += makeEntryItem(entry);
+          }
+
+          tableOutput += "</table>";
+          output.innerHTML = tableOutput;
+        };
+      }
+
+      function loadCSV() {
+        "use strict";
+        var pin = document.getElementById("pin").value;
+        var csvInput = document.getElementById("csvInput");
+
+        if (pin.length === 0) {
+          alert("Enter pin.");
+          csvInput.value = "";
+          return;
+        }
+
+        var csvReader = new FileReader();
+
+        document.getElementById("refresh").hidden = false;
+        csvReader.onload = printCSV(csvReader);
+        csvReader.readAsText(csvInput.files[0]);
       }
     </script>
   </body>
