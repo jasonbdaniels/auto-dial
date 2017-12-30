@@ -12,7 +12,7 @@
 
     <br>
 
-    <button type="button" onclick="loadCSV()" id="refresh" >Load CSV</button>
+    <input type="search" placeholder="Search" id="filter" oninput="loadCSV()" onsearch="loadCSV()"><button type="button" onclick="loadCSV()" id="refresh" >Load CSV</button>
     <p id="output">
     </p>
 
@@ -20,6 +20,27 @@
 
     <script type="text/javascript">
       "use strict";
+      function getFilter() {
+        return document.getElementById("filter").value.toLowerCase();
+      }
+
+      function filterMatches(text) {
+        var filterParts = getFilter().split(" ");
+        var filterIndex;
+
+        text = text.toLowerCase();
+
+        for (filterIndex in filterParts) {
+          var filter = filterParts[filterIndex];
+
+          if (text.includes(filter) === false) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
       function storeCSV(csvText) {
         try {
           window.localStorage.setItem("csv", csvText);
@@ -44,11 +65,16 @@
         }
 
         try {
+          var filter = document.getElementById("filter").value;
+
           if (document.getElementById("savePIN").checked) {
             window.localStorage.setItem("pin", pin);
+            window.localStorage.setItem("filter", filter);
           } else {
             window.sessionStorage.setItem("pin", pin);
+            window.sessionStorage.setItem("filter", filter);
             window.localStorage.removeItem("pin");
+            window.localStorage.removeItem("filter");
           }
         } catch (error) {
           console.log("Unable to store PIN.");
@@ -58,6 +84,13 @@
       function storedPIN() {
         try {
           var pin = window.localStorage.getItem("pin");
+          var filter = window.localStorage.getItem("filter");
+
+          if (filter == null) {
+            filter = window.sessionStorage.getItem("filter");
+          }
+
+          document.getElementById("filter").value = filter;
 
           if (pin) {
             document.getElementById("savePIN").checked = true;
@@ -98,7 +131,7 @@
       function makeEntryItem(entry, pin) {
         var parts = entry.split(",");
 
-        if (parts.length >= 5 && parts[4].startsWith("James")) {
+        if (parts.length >= 5 && isNaN(Number(parts[3])) == false && filterMatches(entry)) {
           var assignment = entry.replace(/,/g, " ");
           var trackingNumber = parts[3];
           var checkInNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#";
