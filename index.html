@@ -4,28 +4,102 @@
     <title>Auto Check In/Out</title>
     <link rel="stylesheet" href="GitHub2.css">
   </head>
-  <body>
+  <body onload="loadCSV(true)">
     <ul>
-      <li><b>PIN:</b> <input type="text" id="pin"></li>
+      <li><b>PIN:</b> <input type="text" id="pin"> Save: <input type="checkbox" id="savePIN" onchange="savePINChanged()"></li>
       <li><b>CSV:</b> <input type="file" name="csv-file" id="csvInput" onchange="loadCSV()"></li>
     </ul>
 
     <br>
 
-    <button type="button" onclick="loadCSV()" id="refresh" hidden >Reload CSV</button>
+    <button type="button" onclick="loadCSV()" id="refresh" >Load CSV</button>
     <p id="output">
     </p>
 
-    <em>Version 0.2.2</em>
+    <em>Version 0.2.2-dev+csv.storage</em>
 
     <script type="text/javascript">
-      function makeEntryItem(entry) {
-        "use strict";
+      "use strict";
+      function storeCSV(csvText) {
+        try {
+          window.localStorage.setItem("csv", csvText);
+        } catch (error) {
+          console.log("Unable to store CSV.");
+        }
+      }
+
+      function storedCSV() {
+        try {
+          return window.localStorage.getItem("csv");
+        } catch (error) {
+          console.log("Unable to read stored CSV.\nTry choosing a file.");
+          return "";
+        }
+      }
+
+      function storePIN(pin) {
+        if (pin === null || pin.length <= 0) {
+          document.getElementById("savePIN").checked = false;
+          return;
+        }
+
+        try {
+          if (document.getElementById("savePIN").checked) {
+            window.localStorage.setItem("pin", pin);
+          } else {
+            window.sessionStorage.setItem("pin", pin);
+            window.localStorage.removeItem("pin");
+          }
+        } catch (error) {
+          console.log("Unable to store PIN.");
+        }
+      }
+
+      function storedPIN() {
+        try {
+          var pin = window.localStorage.getItem("pin");
+
+          if (pin) {
+            document.getElementById("savePIN").checked = true;
+            return pin;
+          }
+
+          pin = window.sessionStorage.getItem("pin");
+
+          if (pin) {
+            return pin;
+          } else {
+            return "";
+          }
+        } catch (error) {
+          console.log("Unable to read stored PIN.");
+          return "";
+        }
+      }
+
+      function getPIN() {
+        var inputPIN = document.getElementById("pin");
+
+        if (inputPIN.value.length > 0) {
+          return inputPIN;
+        } else {
+          var pin = storedPIN();
+
+          inputPIN.value = pin;
+
+          return pin;
+        }
+      }
+
+      function savePINChanged() {
+        storePIN(document.getElementById("pin").value);
+      }
+
+      function makeEntryItem(entry, pin) {
         var parts = entry.split(",");
 
         if (parts.length >= 5 && parts[4].startsWith("James")) {
           var assignment = entry.replace(/,/g, " ");
-          var pin = document.getElementById("pin").value;
           var trackingNumber = parts[3];
           var checkInNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#";
           var checkOutNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,,,,#,1#,2#";
@@ -39,41 +113,60 @@
         return "";
       }
 
-      function printCSV(csvReader) {
-        "use strict";
+      function printCSV(csvText) {
+        if (csvText === null || csvText.length <= 0) { return; }
+
+        var entries = csvText.split("\n");
+        var output = document.getElementById("output");
+        var pin = document.getElementById("pin").value;
+        var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
+        var entry;
+        var entryIndex;
+
+        for (entryIndex in entries) {
+          entry = entries[entryIndex];
+          tableOutput += makeEntryItem(entry, pin);
+        }
+
+        tableOutput += "</table>";
+        output.innerHTML = tableOutput;
+        document.getElementById("refresh").innerHTML = "Reload CSV";
+        storePIN(pin);
+      }
+
+      function makeCSVPrinter(csvReader) {
         return function() {
-          var entries = csvReader.result.split("\n");
-          var output = document.getElementById("output");
-          var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
-          var entry;
-          var entryIndex;
-
-          for (entryIndex in entries) {
-            entry = entries[entryIndex];
-            tableOutput += makeEntryItem(entry);
-          }
-
-          tableOutput += "</table>";
-          output.innerHTML = tableOutput;
+          printCSV(csvReader.result);
+          storeCSV(csvReader.result);
         };
       }
 
-      function loadCSV() {
-        "use strict";
-        var pin = document.getElementById("pin").value;
+      function loadCSV(silently) {
+        var pin = getPIN();
         var csvInput = document.getElementById("csvInput");
 
+        var loadFromInput = function(input) {
+          var csvReader = new FileReader();
+
+          csvReader.onload = makeCSVPrinter(csvReader);
+          csvReader.readAsText(input.files[0]);
+        };
+
+        var loadFromStorage = function() {
+          printCSV(storedCSV());
+        };
+
         if (pin.length === 0) {
-          alert("Enter pin.");
+          if (silently === null || silently === false) {
+            alert("Enter pin.");
+          }
+
           csvInput.value = "";
-          return;
+        } else if (csvInput.value.length > 0) {
+          loadFromInput(csvInput);
+        } else {
+          loadFromStorage();
         }
-
-        var csvReader = new FileReader();
-
-        document.getElementById("refresh").hidden = false;
-        csvReader.onload = printCSV(csvReader);
-        csvReader.readAsText(csvInput.files[0]);
       }
     </script>
   </body>
