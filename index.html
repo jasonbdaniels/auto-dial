@@ -6,7 +6,7 @@
   </head>
   <body onload="loadCSV(true)">
     <ul>
-      <li><b>PIN:</b> <input type="text" id="pin"></li>
+      <li><b>PIN:</b> <input type="text" id="pin"> Save: <input type="checkbox" id="savePIN" onchange="savePINChanged()"></li>
       <li><b>CSV:</b> <input type="file" name="csv-file" id="csvInput" onchange="loadCSV()"></li>
     </ul>
 
@@ -19,6 +19,10 @@
     <em>Version 0.2.2-dev+csv.storage</em>
 
     <script type="text/javascript">
+      function savePINChanged() {
+        storePIN(document.getElementById("pin").value);
+      }
+
       function storeCSV(csvText) {
         try {
           window.localStorage.setItem("csv", csvText);
@@ -37,8 +41,18 @@
       }
 
       function storePIN(pin) {
+        if (pin == null || pin.length <= 0) {
+          document.getElementById("savePIN").checked = false;
+          return;
+        }
+
         try {
-          window.sessionStorage.setItem("pin", pin);
+          if (document.getElementById("savePIN").checked) {
+            window.localStorage.setItem("pin", pin);
+          } else {
+            window.sessionStorage.setItem("pin", pin);
+            window.localStorage.removeItem("pin");
+          }
         } catch (error) {
           console.log("Unable to store PIN.");
         }
@@ -46,7 +60,14 @@
 
       function storedPIN() {
         try {
-          var pin = window.sessionStorage.getItem("pin");
+          var pin = window.localStorage.getItem("pin");
+
+          if (pin) {
+            document.getElementById("savePIN").checked = true;
+            return pin;
+          }
+
+          pin = window.sessionStorage.getItem("pin");
 
           if (pin) {
             return pin;
