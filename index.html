@@ -19,10 +19,7 @@
     <em>Version 0.2.2-dev+csv.storage</em>
 
     <script type="text/javascript">
-      function savePINChanged() {
-        storePIN(document.getElementById("pin").value);
-      }
-
+      "use strict";
       function storeCSV(csvText) {
         try {
           window.localStorage.setItem("csv", csvText);
@@ -41,7 +38,7 @@
       }
 
       function storePIN(pin) {
-        if (pin == null || pin.length <= 0) {
+        if (pin === null || pin.length <= 0) {
           document.getElementById("savePIN").checked = false;
           return;
         }
@@ -94,8 +91,11 @@
         }
       }
 
+      function savePINChanged() {
+        storePIN(document.getElementById("pin").value);
+      }
+
       function makeEntryItem(entry, pin) {
-        "use strict";
         var parts = entry.split(",");
 
         if (parts.length >= 5 && parts[4].startsWith("James")) {
@@ -114,7 +114,7 @@
       }
 
       function printCSV(csvText) {
-        if (csvText == null || csvText.length <= 0) { return; }
+        if (csvText === null || csvText.length <= 0) { return; }
 
         var entries = csvText.split("\n");
         var output = document.getElementById("output");
@@ -135,7 +135,6 @@
       }
 
       function makeCSVPrinter(csvReader) {
-        "use strict";
         return function() {
           printCSV(csvReader.result);
           storeCSV(csvReader.result);
@@ -143,7 +142,6 @@
       }
 
       function loadCSV(silently) {
-        "use strict";
         var pin = getPIN();
         var csvInput = document.getElementById("csvInput");
 
@@ -159,7 +157,7 @@
         };
 
         if (pin.length === 0) {
-          if (silently == null || silently == false) {
+          if (silently === null || silently === false) {
             alert("Enter pin.");
           }
 
