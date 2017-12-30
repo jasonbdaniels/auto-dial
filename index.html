@@ -27,11 +27,12 @@
       function filterMatches(text) {
         var filterParts = getFilter().split(" ");
         var filterIndex;
+        var filter;
 
         text = text.toLowerCase();
 
         for (filterIndex in filterParts) {
-          var filter = filterParts[filterIndex];
+          filter = filterParts[filterIndex];
 
           if (text.includes(filter) === false) {
             return false;
@@ -86,7 +87,7 @@
           var pin = window.localStorage.getItem("pin");
           var filter = window.localStorage.getItem("filter");
 
-          if (filter == null) {
+          if (filter === null) {
             filter = window.sessionStorage.getItem("filter");
           }
 
@@ -131,7 +132,7 @@
       function makeEntryItem(entry, pin) {
         var parts = entry.split(",");
 
-        if (parts.length >= 5 && isNaN(Number(parts[3])) == false && filterMatches(entry)) {
+        if (parts.length >= 5 && isNaN(Number(parts[3])) === false && filterMatches(entry)) {
           var assignment = entry.replace(/,/g, " ");
           var trackingNumber = parts[3];
           var checkInNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#";
