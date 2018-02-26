@@ -24,8 +24,8 @@ function AssignmentViewModel(dialService, assignment) {
       if (!this.filterMatches(assignment)) { return ""; }
 
       var trackingNumber = assignment.order;
-      var checkInNumber = "15165007776,1," + dialService.pin + "#,," + trackingNumber + "#,,#";
-      var checkOutNumber = "15165007776,1," + dialService.pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
+      var checkInNumber = dialService.number + ",1," + dialService.pin + "#,," + trackingNumber + "#,,#";
+      var checkOutNumber = dialService.number + ",1," + dialService.pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
       var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
       var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
       var listItem = "<tr><td>" + assignment.toString() + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
