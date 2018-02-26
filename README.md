@@ -18,11 +18,11 @@
 2. Record audible check in time
 
 #### Example
-	
+
 | Location ID | City       | State | Tracking Number | Assignment |
 |-------------|------------|-------|-----------------|------------|
 | 06087L02    | Cincinnati | OH    | 90833796        | James      |
-	
+
 - **Dial**: `15165007776,,PIN#90833796#,,,,,#`
 - **Link**: <a href="tel:15165007776,,PIN#90833796#,,,,,#">15165007776,,PIN#90833796#,,,,,#</a>
 
@@ -43,10 +43,10 @@
 2. Record audible check out time
 
 #### Example
-	
+
 | Location ID | City       | State | Tracking Number | Assignment | Tech Count |
 |-------------|------------|-------|-----------------|------------|------------|
 | 06087L02    | Cincinnati | OH    | 90833796        | James      | 2          |
-	
+
 - **Dial**: `15165007776,,PIN#90833796#,,,,,#,1#,2#`
 - **Link**: <a href="tel:15165007776,,PIN#90833796#,,,,,#,1#,2#">15165007776,,PIN#90833796#,,,,,#,1#,2#</a>
