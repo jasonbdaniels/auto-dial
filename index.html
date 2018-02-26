@@ -4,9 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auto Check In/Out</title>
     <link rel="stylesheet" href="GitHub2.css">
-    <script type="text/javascript" src="./js/storage.js">
-
-    </script>
+    <script type="text/javascript" src="./js/storage.js"></script>
+    <script type="text/javascript" src="./js/assignment.js"></script>
   </head>
   <body onload="loadCSV(true)">
     <ul>
@@ -23,28 +22,30 @@
     <em>Version 0.3.2</em>
 
     <script type="text/javascript">
+      var assignments = {};
+
       "use strict";
       function getFilter() {
         return document.getElementById("filter").value.toLowerCase();
       }
 
-      function filterMatches(text) {
-        var filterParts = getFilter().split(" ");
-        var filterIndex;
-        var filter;
-
-        text = text.toLowerCase();
-
-        for (filterIndex in filterParts) {
-          filter = filterParts[filterIndex];
-
-          if (text.includes(filter) === false) {
-            return false;
-          }
-        }
-
-        return true;
-      }
+      // function filterMatches(text) {
+      //   var filterParts = getFilter().split(" ");
+      //   var filterIndex;
+      //   var filter;
+      //
+      //   text = text.toLowerCase();
+      //
+      //   for (filterIndex in filterParts) {
+      //     filter = filterParts[filterIndex];
+      //
+      //     if (text.includes(filter) === false) {
+      //       return false;
+      //     }
+      //   }
+      //
+      //   return true;
+      // }
 
       function getPIN() {
         var inputPIN = document.getElementById("pin");
@@ -64,37 +65,57 @@
         storePIN(document.getElementById("pin").value);
       }
 
-      function makeEntryItem(entry, pin) {
-        var parts = entry.split(",");
+      // function makeEntryItem(entry, pin) {
+      //   var parts = entry.split(",");
+      //
+      //   if (parts.length >= 5 && isNaN(Number(parts[3])) === false && filterMatches(entry)) {
+      //     var assignment = entry.replace(/,/g, " ");
+      //     var trackingNumber = parts[3];
+      //     var checkInNumber = "15165007776,1," + pin + "#,," + trackingNumber + "#,,#";
+      //     var checkOutNumber = "15165007776,1," + pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
+      //     var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
+      //     var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
+      //     var listItem = "<tr><td>" + assignment + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
+      //
+      //     return listItem;
+      //   }
+      //
+      //   return "";
+      // }
 
-        if (parts.length >= 5 && isNaN(Number(parts[3])) === false && filterMatches(entry)) {
-          var assignment = entry.replace(/,/g, " ");
-          var trackingNumber = parts[3];
-          var checkInNumber = "15165007776,1," + pin + "#,," + trackingNumber + "#,,#";
-          var checkOutNumber = "15165007776,1," + pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
-          var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
-          var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
-          var listItem = "<tr><td>" + assignment + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
-
-          return listItem;
-        }
-
-        return "";
-      }
-
-      function printCSV(csvText) {
+      function parseCSV(csvText) {
         if (csvText === null || csvText.length <= 0) { return; }
 
         var entries = csvText.split("\n");
-        var output = document.getElementById("output");
-        var pin = document.getElementById("pin").value;
-        var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
-        var entry;
         var entryIndex;
+        var entryParts;
 
         for (entryIndex in entries) {
-          entry = entries[entryIndex];
-          tableOutput += makeEntryItem(entry, pin);
+          entryParts = entries[entryIndex].split(",");
+
+          if (entryParts.length >= 5 && isNaN(Number(entryParts[3])) === false) {
+            var assignment = Assignment(entryParts[0], entryParts[1], entryParts[2], entryParts[3], entryParts[4]);
+
+            assignments[assignment.id] = assignment;
+          }
+        }
+      }
+
+      function printCSV(csvText) {
+        parseCSV(csvText);
+
+        var output = document.getElementById("output");
+        var pin = document.getElementById("pin").value;
+        var dialService = DialService('15165007776', pin);
+        var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
+        var viewModel;
+        var assignIndex;
+
+        for (assignIndex in assignments) {
+          viewModel = AssignmentViewModel(dialService, assignments[assignIndex]);
+          viewModel.filter = getFilter();
+
+          tableOutput += viewModel.tableRow();
         }
 
         tableOutput += "</table>";
@@ -123,6 +144,10 @@
 
         var loadFromStorage = function() {
           printCSV(storedCSV());
+
+          var csvText = storedCSV()
+
+
         };
 
         if (pin.length === 0) {
