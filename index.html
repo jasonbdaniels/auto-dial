@@ -17,7 +17,7 @@
     <p id="output">
     </p>
 
-    <em>Version 0.3.1</em>
+    <em>Version 0.3.2</em>
 
     <script type="text/javascript">
       "use strict";
@@ -136,8 +136,8 @@
         if (parts.length >= 5 && isNaN(Number(parts[3])) === false && filterMatches(entry)) {
           var assignment = entry.replace(/,/g, " ");
           var trackingNumber = parts[3];
-          var checkInNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,#";
-          var checkOutNumber = "15165007776,,,,1," + pin + "#,," + trackingNumber + "#,,,,,,,,#,1#,2#";
+          var checkInNumber = "15165007776,1," + pin + "#,," + trackingNumber + "#,,#";
+          var checkOutNumber = "15165007776,1," + pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
           var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
           var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
           var listItem = "<tr><td>" + assignment + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
