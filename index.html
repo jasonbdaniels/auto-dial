@@ -16,6 +16,7 @@
     <br>
 
     <input type="search" placeholder="Search" id="filter" oninput="loadCSV()" onsearch="loadCSV()"><button type="button" onclick="loadCSV()" id="refresh" >Load CSV</button>
+    <button type="button" onclick="showSelected()" id="showSelected" >Show Selected</button>
     <p id="output">
     </p>
 
@@ -27,6 +28,18 @@
       "use strict";
       function getFilter() {
         return document.getElementById("filter").value.toLowerCase();
+      }
+
+      function showSelected() {
+        var selected = [];
+
+        document.getElementsByName('selected').forEach(function(selection) {
+          if (selection.checked) {
+            selected.push(assignments[selection.value]);
+          }
+        });
+
+        console.log(selected);
       }
 
       function getPIN() {
@@ -71,7 +84,7 @@
         var output = document.getElementById("output");
         var pin = document.getElementById("pin").value;
         var dialService = DialService('15165007776', pin);
-        var tableOutput = "<table><tr><th>Assignment</th><th>Check In</th><th>Check Out</th></tr>";
+        var tableOutput = "<table><tr><th>Assignment</th><th>Select</th></tr>";
         var viewModel;
         var assignIndex;
 

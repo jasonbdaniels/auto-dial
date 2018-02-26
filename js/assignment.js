@@ -28,7 +28,9 @@ function AssignmentViewModel(dialService, assignment) {
       var checkOutNumber = dialService.number + ",1," + dialService.pin + "#,," + trackingNumber + ",#,,#,1,#,,2,#";
       var checkInLink = "<a href=\"tel:" + checkInNumber + "\">Check-In</a>";
       var checkOutLink = "<a href=\"tel:" + checkOutNumber + "\">Check-Out</a>";
-      var listItem = "<tr><td>" + assignment.toString() + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
+      var selectbox = "<input type='checkbox' name='selected' value=" + assignment.id + ">"
+      // var listItem = "<tr><td>" + assignment.toString() + "</td><td>" + checkInLink + "</td><td>" + checkOutLink + "</td></tr>";
+      var listItem = "<tr><td>" + assignment.toString() + "</td><td>" + selectbox + "</td></tr>";
 
       return listItem;
     },
