@@ -1,3 +1,5 @@
+<!-- Copyright 2018 Licensed under the Academic Free License version 3.0 -->
+
 # Auto Check In/Out Dial Service
 
 - Number: `1-516-500-7776`
